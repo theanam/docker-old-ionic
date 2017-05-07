@@ -59,7 +59,8 @@ pipelines:
           - yarn install
           - ionic config build
           - ionic platform add android
-          - ionic build android
+          - ionic build android --release
 ```
 
+# TODO
 It is important to manage your keystores correctly. For signing debug releases, the android build tools will automatically fall back to `~/.android/debug.keystore`, which should not be password protected.
