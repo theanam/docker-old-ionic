@@ -1,4 +1,4 @@
-FROM     ubuntu:16.04
+FROM     atlassian/default-image:latest
 MAINTAINER Medy Belmokhtar <medy.belmokhtar@vif.fr>
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -17,10 +17,7 @@ RUN apt-get update &&  \
     npm install -g cordova@"$CORDOVA_VERSION" ionic@"$IONIC_VERSION" && \
     npm cache clear && \
 
-    gem install sass && \
-
-    ionic start myApp sidemenu
-
+    gem install sass
 
 
 #ANDROID
@@ -60,6 +57,3 @@ COPY tools /opt/tools
 RUN ["/opt/tools/android-accept-licenses.sh", "android update sdk --all --no-ui --filter platform-tools,tools,build-tools-23.0.2,android-23,extra-android-support,extra-android-m2repository,extra-google-m2repository"]
 RUN unzip ${ANDROID_HOME}/temp/*.zip -d ${ANDROID_HOME}
 
-WORKDIR myApp
-EXPOSE 8100 35729
-CMD ["ionic", "serve"]
