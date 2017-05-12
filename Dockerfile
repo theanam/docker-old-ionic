@@ -9,39 +9,39 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # Install basics
 RUN apt-get update &&  \
-    apt-get install -y git wget curl unzip ruby && \
-
-    curl --retry 3 -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" && \
-    tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 && \
-    rm "node-v$NODE_VERSION-linux-x64.tar.gz" && \
-    npm install -g cordova@"$CORDOVA_VERSION" ionic@"$IONIC_VERSION" && \
+    apt-get install -y curl wget ruby unzip && \
+    export NVM_DIR="/root/.nvm" && \
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
+    nvm install v${NODE_VERSION} && \
+    nvm use v${NODE_VERSION} && \
+    npm install -g cordova@${CORDOVA_VERSION} ionic@${IONIC_VERSION} yarn && \
     npm cache clear && \
 
-    gem install sass
+    gem install sass && \
 
 
 #ANDROID
 #JAVA
 
 # install python-software-properties (so you can do add-apt-repository)
-RUN apt-get update && apt-get install -y -q python-software-properties software-properties-common  && \
+    apt-get update && apt-get install -y -q python-software-properties software-properties-common  && \
 
     add-apt-repository ppa:webupd8team/java -y && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get update && apt-get -y install oracle-java8-installer
+    apt-get update && apt-get -y install oracle-java8-installer && \
 
 
 #ANDROID STUFF
-RUN echo ANDROID_HOME="${ANDROID_HOME}" >> /etc/environment && \
+    echo ANDROID_HOME="${ANDROID_HOME}" >> /etc/environment && \
     dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y expect ant wget libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 lib32z1 qemu-kvm kmod && \
     apt-get clean && \
     apt-get autoclean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 
 # Install Android SDK
-RUN cd /opt && \
+    cd /opt && \
     wget --output-document=android-sdk.tgz --quiet http://dl.google.com/android/android-sdk_r24.4.1-linux.tgz && \
     tar xzf android-sdk.tgz && \
     rm -f android-sdk.tgz && \
