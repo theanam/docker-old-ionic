@@ -4,8 +4,8 @@ MAINTAINER Medy Belmokhtar <medy.belmokhtar@vif.fr>
 ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_HOME=/opt/android-sdk-linux \
     NODE_VERSION=7.10.0 \
-    IONIC_VERSION=2.2.3 \
-    CORDOVA_VERSION=7.0.0
+    IONIC_VERSION=3.0.0 \
+    CORDOVA_VERSION=7.0.1
 
 # Install basics
 RUN apt-get update &&  \
