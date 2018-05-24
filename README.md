@@ -52,6 +52,12 @@ use the run command as following:
 
     docker run --rm -it -v "$PWD:/data" -v ".gradle:/root/.gradle" -p 8100:8100 theanam/old-ionic-build
 
+### Known issues/Facts:
+
+* Build by default downloads gradle, maven each time.
+* When using ionic serve: please select the ip adddress. If you select localhost, you won't be able to access it.
+* When using serve: the application can be accessed from the default port **8100** , so http://localhost:8100 should work fine (if you are not running anything on the same port in the host machine) 
+
 ### If you want to know more about the image: 
 
 Please visit the work of [medy belmokhtar](https://github.com/bmedy/ionic-android). This image was the original version it was forked from. This repository contains more information about development.
