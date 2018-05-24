@@ -24,13 +24,13 @@ RUN apt-get update &&  \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#ANDROID
-#JAVA
-
-# install python-software-properties (so you can do add-apt-repository)
+# install python-software-properties (so you can do add-apt-repository) then install Java 8
 RUN add-apt-repository ppa:webupd8team/java -y && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get update && apt-get -y install oracle-java8-installer
+    apt-get update && apt-get -y install oracle-java8-installer && \
+    apt-get clean && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 #ANDROID STUFF
@@ -43,20 +43,23 @@ RUN cd /opt && \
     wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
     unzip sdk-tools-linux-3859397.zip && \
     rm -f sdk-tools-linux-3859397.zip && \
-    chown -R root /opt
+    chown -R root:root /opt && \
+    cd tools && \
+    mkdir templates 
 
-#Add gradle templates from Old android tools
-RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
-    unzip tools_r25.2.5-linux.zip && \
-    cp -r tools/templates ${ANDROID_HOME}/tools/ && \
-    rm -f tools_r25.2.5-linux.zip
 # Setup environment
-
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:/opt/tools
 
 # Install sdk elements
 COPY tools /opt/tools
-RUN ["/opt/tools/android-accept-licenses.sh", "android --use-sdk-wrapper update sdk --all --no-ui --filter tools,platform-tools,build-tools-25.0.0"]
+RUN ["/opt/tools/android-accept-licenses.sh", "android --use-sdk-wrapper update sdk --all --no-ui --filter tools,platform-tools,build-tools-25.0.0,android-25"]
+
+#Add gradle templates from Old android tools
+RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
+    unzip tools_r25.2.5-linux.zip 'tools/templates/*' -d /opt/android-sdk-linux/ && \
+    rm -f tools_r25.2.5-linux.zip
+
+# Set up a Launch Script
 RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$1"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
 VOLUME [ "/data" ]
 WORKDIR /data
