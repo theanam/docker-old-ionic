@@ -1,65 +1,65 @@
 FROM     ubuntu:16.04
-MAINTAINER Medy Belmokhtar <medy.belmokhtar@vif.fr>
-
+#Labels
+LABEL Maintainer Anam Ahmed
+LABEL Author-Email me@anam.co
+LABEL Forked-From https://github.com/bmedy/ionic-android
+##Env Files
 ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_HOME=/opt/android-sdk-linux \
-    NODE_VERSION=7.10.0 \
-    IONIC_VERSION=2.2.3 \
-    CORDOVA_VERSION=7.0.0
+    NODE_VERSION=6.14.0 \
+    IONIC_VERSION=1 \
+    CORDOVA_VERSION=5
 
-# Install basics
+# APT installation
 RUN apt-get update &&  \
-    apt-get install -y git wget curl unzip ruby && \
-
+    dpkg --add-architecture i386 && \
+    apt-get install -y -q git wget curl unzip python-software-properties software-properties-common \
+    expect ant wget libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 lib32z1 qemu-kvm kmod && \
     curl --retry 3 -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" && \
     tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 && \
     rm "node-v$NODE_VERSION-linux-x64.tar.gz" && \
-    npm install -g cordova@"$CORDOVA_VERSION" ionic@"$IONIC_VERSION" && \
+    npm install -g cordova@"$CORDOVA_VERSION" ionic@"$IONIC_VERSION" gulp bower && \
     npm cache clear && \
-
-    gem install sass && \
-
-    ionic start myApp sidemenu
-
-
+    apt-get clean && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #ANDROID
 #JAVA
 
 # install python-software-properties (so you can do add-apt-repository)
-RUN apt-get update && apt-get install -y -q python-software-properties software-properties-common  && \
-
-    add-apt-repository ppa:webupd8team/java -y && \
+RUN add-apt-repository ppa:webupd8team/java -y && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     apt-get update && apt-get -y install oracle-java8-installer
 
 
 #ANDROID STUFF
-RUN echo ANDROID_HOME="${ANDROID_HOME}" >> /etc/environment && \
-    dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get install -y expect ant wget libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 lib32z1 qemu-kvm kmod && \
-    apt-get clean && \
-    apt-get autoclean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN echo ANDROID_HOME="${ANDROID_HOME}" >> /etc/environment
 
 # Install Android SDK
 RUN cd /opt && \
-    wget --output-document=android-sdk.tgz --quiet http://dl.google.com/android/android-sdk_r24.4.1-linux.tgz && \
-    tar xzf android-sdk.tgz && \
-    rm -f android-sdk.tgz && \
-    chown -R root. /opt
+    mkdir android-sdk-linux && \
+    cd android-sdk-linux && \ 
+    wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
+    unzip sdk-tools-linux-3859397.zip && \
+    rm -f sdk-tools-linux-3859397.zip && \
+    chown -R root /opt
 
+#Add gradle templates from Old android tools
+RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
+    unzip tools_r25.2.5-linux.zip && \
+    cp -r tools/templates ${ANDROID_HOME}/tools/ && \
+    rm -f tools_r25.2.5-linux.zip
 # Setup environment
 
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:/opt/tools
 
 # Install sdk elements
 COPY tools /opt/tools
-
-RUN ["/opt/tools/android-accept-licenses.sh", "android update sdk --all --no-ui --filter platform-tools,tools,build-tools-23.0.2,android-23,extra-android-support,extra-android-m2repository,extra-google-m2repository"]
-RUN unzip ${ANDROID_HOME}/temp/*.zip -d ${ANDROID_HOME}
-
-WORKDIR myApp
+RUN ["/opt/tools/android-accept-licenses.sh", "android --use-sdk-wrapper update sdk --all --no-ui --filter tools,platform-tools,build-tools-25.0.0"]
+RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$1"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
+VOLUME [ "/data" ]
+WORKDIR /data
 EXPOSE 8100 35729
-CMD ["ionic", "serve"]
+ENTRYPOINT ["ionicx"]
+CMD ["serve"]
