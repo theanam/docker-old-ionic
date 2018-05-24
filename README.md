@@ -1,6 +1,6 @@
 ## Docker Image for testing and building Ionic 1 Projects 
 
-******
+
  Ionic 1 isn't the default version of ionic anymore and getting ionic 1 projects working on ionic CLI 2/3 is tough. The old CLI also requires older version of nodejs. This docker image can help you out. This image contains *nodejs 6.14* , ionic 1 and cordova 5. 
 
 Originally forked from : <https://github.com/bmedy/ionic-android>
