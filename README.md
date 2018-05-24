@@ -1,66 +1,59 @@
-# ionic-build-android
+## Docker Image for testing and building Ionic 1 Projects 
 
-## docker-compose
-```yaml
-version: '2'
-services:
-    app:
-        container_name: build_ionic
-        image: bmedy/ionic-android
-        volumes:
-            - .:/myApp
-            - ~/.gradle:/root/.gradle
-```
+******
+ Ionic 1 isn't the default version of ionic anymore and getting ionic 1 projects working on ionic CLI 2/3 is tough. The old CLI also requires older version of nodejs. This docker image can help you out. This image contains *nodejs 6.14* , ionic 1 and cordova 5. 
 
-### run
-```
-docker-compose run app ionic build android --release
-```
-## manual usage
+Originally forked from : <https://github.com/bmedy/ionic-android>
 
-```
-docker build -t bmedy/ionic-android .
-```
+You can use it in two ways depending on your knowledge on docker. 
 
-```
-docker run -ti --rm -p 8100:8100 -p 35729:35729 bmedy/ionic-android
-```
-If you have your own ionic sources, you can launch it with:
+### If you don't know / Don't want to know about docker : 
 
-```
-docker run -ti --rm -p 8100:8100 -p 35729:35729 -v /path/to/your/ionic-project/:/myApp:rw bmedy/ionic-android:1.4.5
-```
+Download and install docker from <http://docker.io>
 
-### Automation
-With this alias:
+Open up the command line and navigate to the project folder and then you can run these commands:
 
-```
-alias ionic="docker run -ti --rm -p 8100:8100 -p 35729:35729 --privileged -v /dev/bus/usb:/dev/bus/usb -v ~/.gradle:/root/.gradle -v \$PWD:/myApp:rw bmedy/ionic-android:1.4.5 ionic"
-```
+    # To start the development server:
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build
+    # To build APK 
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build build android
+    # To enter the shell of the build machine and manually run commands run this command :
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 --entrypoint /bin/bash theanam/old-ionic-build
 
-> Due to a bug in ionic, if you want to use ionic serve, you have to use --net host option :
-
-```
-alias ionic="docker run -ti --rm --net host --privileged -v /dev/bus/usb:/dev/bus/usb -v ~/.gradle:/root/.gradle -v \$PWD:/myApp:rw bmedy/ionic-android:1.4.5 ionic"
-```
+The command will take a long time for the first time you run it, because it will download the docker image, But after the first time, it will work really fast in every project on that computer.
 
 
-## Bitbucket CI Configuration
+To ease up things more, you can add this as alias in your **.bashrc** file 
 
-Here is a sample bitbucket.pipelines.yml file for setting up the project and compiling it:
+    alias old-ionic=docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build
 
-```yaml
-image: bmedy/ionic-android:latest
+Then you can access the command like ionic cli:
 
-pipelines:
-  default:
-    - step:
-        script: # Modify the commands below to build your repository.
-          - yarn install
-          - ionic config build
-          - ionic platform add android
-          - ionic build android --release
-```
+    # For the dev server
+    old-ionic serve
+    # For building 
+    old-ionic build android
+    # For release  build
+    old-ionic build --release android
 
-# TODO
-It is important to manage your keystores correctly. For signing debug releases, the android build tools will automatically fall back to `~/.android/debug.keystore`, which should not be password protected.
+    #...and so on
+
+### If you know docker :
+
+You can build the image manually from the docker file with this command :
+
+    docker build -t theanam/old-ionic-build .
+
+make sure to run it in the folder with the `Dockerfile` and `tools` folder. 
+
+You can also add a volume for gradle to make builds faster. 
+
+use the run command as following: 
+
+    docker run --rm -it -v "$PWD:/data" -v ".gradle:/root/.gradle" -p 8100:8100 theanam/old-ionic-build
+
+### If you want to know more about the image: 
+
+Please visit the work of [medy belmokhtar](https://github.com/bmedy/ionic-android). This image was the original version it was forked from. This repository contains more information about development.
+
+
