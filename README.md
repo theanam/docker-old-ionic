@@ -53,6 +53,7 @@ make sure to run it in the folder with the `Dockerfile` and `tools` folder.
 * Build by default downloads gradle, maven each time, if you have .gradle volume added, only the first build will be slow
 * When using ionic serve: please select the ip adddress instead of localhost when prompted. If you select localhost, you won't be able to access it.
 * When using serve: the application can be accessed from the default port **8100** , so http://localhost:8100 should work fine (if you are not running anything on the same port in the host machine) 
+* Make sure to add `.gradle` and `.android` folders in your project's `.gitignore` file.
 
 ### If you want to know more about the image: 
 
