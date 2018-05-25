@@ -1,16 +1,17 @@
 FROM     ubuntu:16.04
-#Labels
+
+# LABELS
 LABEL Maintainer Anam Ahmed
 LABEL Author-Email me@anam.co
 LABEL Forked-From https://github.com/bmedy/ionic-android
-##Env Files
+#Env Values
 ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_HOME=/opt/android-sdk-linux \
     NODE_VERSION=6.14.0 \
     IONIC_VERSION=1 \
     CORDOVA_VERSION=5
 
-# APT installation
+# APT INSTALLATIONS
 RUN apt-get update &&  \
     dpkg --add-architecture i386 && \
     apt-get install -y -q git wget curl unzip python-software-properties software-properties-common \
@@ -24,7 +25,7 @@ RUN apt-get update &&  \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# install python-software-properties (so you can do add-apt-repository) then install Java 8
+# ADD PPA AND INSTALL JAVA 8
 RUN add-apt-repository ppa:webupd8team/java -y && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     apt-get update && apt-get -y install oracle-java8-installer && \
@@ -33,10 +34,10 @@ RUN add-apt-repository ppa:webupd8team/java -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
-#ANDROID STUFF
+#ADD ANDROID HOME ENV VARIABLE
 RUN echo ANDROID_HOME="${ANDROID_HOME}" >> /etc/environment
 
-# Install Android SDK
+# DOWNLOAD AND INSTALL ANDROID SDK
 RUN cd /opt && \
     mkdir android-sdk-linux && \
     cd android-sdk-linux && \ 
@@ -47,20 +48,22 @@ RUN cd /opt && \
     cd tools && \
     mkdir templates 
 
-# Setup environment
+# SETUP PATH
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:/opt/tools
 
-# Install sdk elements
+# AUTMATIC ACCEPT LICENSE AND INSTALL SDK ELEMENTS
 COPY tools /opt/tools
 RUN ["/opt/tools/android-accept-licenses.sh", "android --use-sdk-wrapper update sdk --all --no-ui --filter tools,platform-tools,build-tools-25.0.0,android-25"]
 
-#Add gradle templates from Old android tools
+# ADD MISSING GRADLE TEMPLATE FROM OLDER SDK
 RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
     unzip tools_r25.2.5-linux.zip 'tools/templates/*' -d /opt/android-sdk-linux/ && \
     rm -f tools_r25.2.5-linux.zip
 
-# Set up a Launch Script
+# CREATE A LAUNCH SCRIPT
 RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$@"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
+
+#FINISHING UP
 VOLUME [ "/data","/root/.gradle", "/root/.android"]
 WORKDIR /data
 EXPOSE 8100 35729
