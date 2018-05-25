@@ -14,18 +14,18 @@ Download and install docker from <http://docker.io>
 Open up the command line and navigate to the project folder and then you can run these commands:
 
     # To start the development server:
-    docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 -p 35729:35729 theanam/old-ionic-build
     # To build APK 
-    docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build build android
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 -p 35729:35729 theanam/old-ionic-build build android
     # To enter the shell of the build machine and manually run commands run this command :
-    docker run --rm -it -v "$PWD:/data" -p 8100:8100 --entrypoint /bin/bash theanam/old-ionic-build
+    docker run --rm -it -v "$PWD:/data" -p 8100:8100 -p 35729:35729 --entrypoint /bin/bash theanam/old-ionic-build
 
 The command will take a long time for the first time you run it, because it will download the docker image, But after the first time, it will work really fast in every project on that computer.
 
 
 To ease up things more, you can add this as alias in your **.bashrc** file 
 
-    alias old-ionic='docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build'
+    alias old-ionic='docker run --rm -it -v "$PWD:/data" -p 8100:8100 -p 35729:35729 theanam/old-ionic-build'
 
 Then you can access the command like ionic cli:
 
