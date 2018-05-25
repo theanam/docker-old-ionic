@@ -60,7 +60,7 @@ RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
     rm -f tools_r25.2.5-linux.zip
 
 # Set up a Launch Script
-RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$1"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
+RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$@"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
 VOLUME [ "/data","/root/.gradle", "/root/.android"]
 WORKDIR /data
 EXPOSE 8100 35729
