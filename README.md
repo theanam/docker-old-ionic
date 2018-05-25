@@ -25,7 +25,7 @@ The command will take a long time for the first time you run it, because it will
 
 To ease up things more, you can add this as alias in your **.bashrc** file 
 
-    alias old-ionic=docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build
+    alias old-ionic='docker run --rm -it -v "$PWD:/data" -p 8100:8100 theanam/old-ionic-build'
 
 Then you can access the command like ionic cli:
 
