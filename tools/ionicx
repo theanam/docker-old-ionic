@@ -2,4 +2,4 @@
 cd /data
 npm install
 bower install --allow-root 
-ionic "$@"'
+ionic "$@"
