@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_HOME=/opt/android-sdk-linux \
     NODE_VERSION=6.14.0 \
     IONIC_VERSION=1 \
-    CORDOVA_VERSION=5
+    CORDOVA_VERSION=6.5.0
 
 # APT INSTALLATIONS
 RUN apt-get update &&  \
@@ -61,7 +61,8 @@ RUN wget https://dl.google.com/android/repository/tools_r25.2.5-linux.zip && \
     rm -f tools_r25.2.5-linux.zip
 
 # CREATE A LAUNCH SCRIPT
-RUN echo '#!/bin/bash \n cd /data && npm install && bower install --allow-root && ionic "$@"'>/usr/bin/ionicx && chmod +x /usr/bin/ionicx
+RUN cp /opt/tools/ionicx /usr/local/bin/ionicx && \
+    cp /opt/tools/cordovax /usr/local/bin/cordovax
 
 #FINISHING UP
 VOLUME [ "/data","/root/.gradle", "/root/.android"]

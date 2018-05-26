@@ -29,6 +29,10 @@ To ease up things more, you can add this as alias in your **.bashrc** file
 
     alias old-ionic='docker run --rm -it -v "$PWD:/data" -v "$PWD/.gradle:/root/.gradle" -v "$PWD/.android:/root/.android" -p 8100:8100 -p 35729:35729 theanam/old-ionic-build'
 
+    # You can add an additional alias if you want to access the shell of the container and do things by yourself: 
+
+    alias old-ionic-here='docker run --rm -it -v "$PWD:/data" -v "$PWD/.gradle:/root/.gradle" -v "$PWD/.android:/root/.android" -p 8100:8100 -p 35729:35729 --entrypoint /bin/bash theanam/old-ionic-build'
+
 Then you can access the command like ionic cli:
 
     # For the dev server
